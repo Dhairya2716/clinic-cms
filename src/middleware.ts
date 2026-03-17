@@ -1,14 +1,12 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Decode JWT payload WITHOUT verifying signature.
-// We trust the external API issued it; the external API will re-verify on each proxied call.
+
 function decodeJwtPayload(token: string): any | null {
   try {
     const parts = token.split('.')
     if (parts.length !== 3) return null
     const payload = parts[1]
-    // Base64url decode
     const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
     const json = atob(base64)
     return JSON.parse(json)
@@ -36,7 +34,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    // Decode without verifying signature — external API will verify on actual data calls
+   
     const payload = decodeJwtPayload(token)
 
     if (!payload) {
@@ -48,7 +46,7 @@ export async function middleware(request: NextRequest) {
 
     const role = payload.role as string
 
-    // Role-based page access
+   
     if (pathname.startsWith('/admin') && role !== 'admin') {
       return NextResponse.redirect(new URL(`/${role}`, request.url))
     }
@@ -65,7 +63,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Redirect logged-in users away from login page
+ 
   if (pathname === '/login') {
     const token = request.cookies.get('token')?.value
     if (token) {
