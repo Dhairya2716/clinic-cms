@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       )
     }
 
-    // Set JWT as httpOnly cookie
+    
     const cookieStore = await cookies()
     cookieStore.set({
       name: 'token',
