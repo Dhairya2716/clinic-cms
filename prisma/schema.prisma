@@ -1,0 +1,116 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  admin
+  doctor
+  receptionist
+  patient
+}
+
+enum QueueStatus {
+  WAITING
+  IN_PROGRESS
+  DONE
+  SKIPPED
+}
+
+model Clinic {
+  id           Int           @id @default(autoincrement())
+  name         String        @db.VarChar(255)
+  code         String        @unique @db.VarChar(50)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  users        User[]
+  appointments Appointment[]
+  queues       Queue[]
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(255)
+  email        String         @unique @db.VarChar(255)
+  password     String         @db.VarChar(255)
+  role         Role
+  clinicId     Int
+  clinic       Clinic         @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  appointments Appointment[]  @relation("PatientAppointments")
+  prescriptions Prescription[] @relation("DoctorPrescriptions")
+  reports       Report[]       @relation("DoctorReports")
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([clinicId])
+}
+
+model Appointment {
+  id           Int           @id @default(autoincrement())
+  patientId    Int
+  patient      User          @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade)
+  clinicId     Int
+  clinic       Clinic        @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  date         DateTime      @db.Date
+  slot         String        @db.VarChar(50)
+  status       String        @default("QUEUED") @db.VarChar(50)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  queue        Queue?
+  prescription Prescription?
+  report       Report?
+
+  @@unique([clinicId, date, slot, patientId])
+  @@index([clinicId])
+  @@index([patientId])
+  @@index([date])
+}
+
+model Queue {
+  id            Int         @id @default(autoincrement())
+  appointmentId Int         @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  clinicId      Int
+  clinic        Clinic      @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  date          DateTime    @db.Date
+  token         Int
+  status        QueueStatus @default(WAITING)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([clinicId, date, token])
+  @@index([clinicId, date])
+}
+
+model Prescription {
+  id            Int         @id @default(autoincrement())
+  appointmentId Int         @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  doctorId      Int
+  doctor        User        @relation("DoctorPrescriptions", fields: [doctorId], references: [id], onDelete: Cascade)
+  medicines     String      @db.Text
+  notes         String?     @db.Text
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([appointmentId])
+}
+
+model Report {
+  id            Int         @id @default(autoincrement())
+  appointmentId Int         @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  doctorId      Int
+  doctor        User        @relation("DoctorReports", fields: [doctorId], references: [id], onDelete: Cascade)
+  diagnosis     String      @db.Text
+  tests         String?     @db.Text
+  remarks       String?     @db.Text
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([appointmentId])
+}
