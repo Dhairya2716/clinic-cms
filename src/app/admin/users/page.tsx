@@ -37,6 +37,7 @@ export default function UserManagement() {
     setError('')
     setSuccess('')
 
+    
     try {
       const res = await fetch('/api/users', {
         method: 'POST',
