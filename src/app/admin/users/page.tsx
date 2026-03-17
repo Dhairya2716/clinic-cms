@@ -61,7 +61,7 @@ export default function UserManagement() {
     <div>
       <h1 className="text-2xl font-bold mb-6 text-gray-800">User Management</h1>
 
-      {/* Create User Form */}
+      
       <div className="bg-white rounded-lg shadow border border-gray-200 mb-8">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-base font-semibold text-gray-800">Add New User</h2>
@@ -105,7 +105,7 @@ export default function UserManagement() {
         </div>
       </div>
 
-      {/* Users Table */}
+      
       <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
           <h2 className="text-base font-semibold text-gray-800">All Users</h2>
