@@ -26,7 +26,7 @@ export default function AdminDashboard() {
     <div>
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Dashboard</h1>
 
-      {/* Stat Cards */}
+      
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
         <div className="bg-blue-600 p-6 rounded-lg text-white shadow-sm">
           <h3 className="text-blue-100 text-sm font-bold uppercase tracking-wide mb-2">Total Users</h3>
